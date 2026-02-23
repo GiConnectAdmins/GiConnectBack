@@ -32,11 +32,20 @@ app.get('/', (req, res) => {
   });
 });
 
-// ========== RUTAS (comentadas por ahora) ==========
-// Aquí iremos agregando las rutas de la API:
+// ========== RUTAS DE LA API ==========
+// Aquí montamos todas las rutas de la aplicación
+// Cada app.use() conecta un conjunto de rutas bajo un prefijo específico
+
+// Rutas de Clases
+// Todas las rutas que empiecen con /api/clases se manejan en clase.routes.js
+// Ejemplos: GET /api/clases, POST /api/clases, GET /api/clases/:id, etc.
+app.use('/api/clases', require('./routes/clase.routes'));
+
+// Aquí irán más rutas según vayas creando controladores:
+// app.use('/api/cinturones', require('./routes/cinturon.routes'));
+// app.use('/api/equipos', require('./routes/equipo.routes'));
+// app.use('/api/personas', require('./routes/person.routes'));
 // app.use('/api/auth', require('./routes/auth.routes'));
-// Esto significa: todas las rutas que empiecen con /api/auth
-// se manejarán en el archivo routes/auth.routes.js
 
 // Exporta la aplicación para usarla en server.js
 module.exports = app;

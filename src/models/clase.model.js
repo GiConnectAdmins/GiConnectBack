@@ -104,19 +104,18 @@ const ClaseSchema = new mongoose.Schema({
 // ========== VALIDACIÓN PERSONALIZADA ==========
 
 // Validación a nivel de documento: verificar coherencia entre tipo y campos
-ClaseSchema.pre('save', function(next) {
+ClaseSchema.pre('save', function() {
   // Si es clase recurrente, NO debe tener fecha
   if (this.tipo === 'recurrente' && this.fecha) {
-    return next(new Error('Una clase recurrente no debe tener campo "fecha"'));
+    throw new Error('Una clase recurrente no debe tener campo "fecha"');
   }
   
   // Si es clase especial, NO debe tener diaSemana
   if (this.tipo === 'especial' && this.diaSemana) {
-    return next(new Error('Una clase especial no debe tener campo "diaSemana"'));
+    throw new Error('Una clase especial no debe tener campo "diaSemana"');
   }
   
-  // Si todo está bien, continuar
-  next();
+  // Si todo está bien, no hacemos nada (la validación pasa)
 });
 
 // ========== MÉTODOS DEL MODELO ==========
