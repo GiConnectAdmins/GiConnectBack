@@ -1,9 +1,9 @@
 // Importa Express, el framework para crear APIs
-const express = require('express');
+const express = require("express");
 
 // Importa CORS (Cross-Origin Resource Sharing)
 // Permite que tu frontend (Angular) en otro puerto/dominio haga peticiones a esta API
-const cors = require('cors');
+const cors = require("cors");
 
 // Crea la aplicación Express
 const app = express();
@@ -25,10 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 // ========== RUTA DE PRUEBA ==========
 // GET a la raíz (http://localhost:3000/)
 // Sirve para verificar que la API está funcionando
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'API de GiConnect funcionando ✅',
-    version: '1.0.0'
+app.get("/", (req, res) => {
+  res.json({
+    message: "API de GiConnect funcionando ✅",
+    version: "1.0.0",
   });
 });
 
@@ -39,7 +39,10 @@ app.get('/', (req, res) => {
 // Rutas de Clases
 // Todas las rutas que empiecen con /api/clases se manejan en clase.routes.js
 // Ejemplos: GET /api/clases, POST /api/clases, GET /api/clases/:id, etc.
-app.use('/api/clases', require('./routes/clase.routes'));
+app.use("/api/clases", require("./routes/clase.routes"));
+
+// Rutas de BeltDates (concesión de cinturones)
+app.use("/api/beltdates", require("./routes/beltdate.routes"));
 
 // Aquí irán más rutas según vayas creando controladores:
 // app.use('/api/cinturones', require('./routes/cinturon.routes'));
