@@ -44,11 +44,8 @@ app.use("/api/clases", require("./routes/clase.routes"));
 // Rutas de BeltDates (concesión de cinturones)
 app.use("/api/beltdates", require("./routes/beltdate.routes"));
 
-// Aquí irán más rutas según vayas creando controladores:
-// app.use('/api/cinturones', require('./routes/cinturon.routes'));
-// app.use('/api/equipos', require('./routes/equipo.routes'));
-// app.use('/api/personas', require('./routes/person.routes'));
-// app.use('/api/auth', require('./routes/auth.routes'));
+// Rutas de Cinturones
+app.use('/api/cinturones', require('./routes/cinturon.routes'));
 
 // Exporta la aplicación para usarla en server.js
 module.exports = app;
