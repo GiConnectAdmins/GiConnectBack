@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 // ========== ENUM: Estados posibles de una solicitud ==========
 const ESTADOS = ["pendiente", "aceptada", "rechazada"];
 
+// ========== ENUM: Tipos de solicitud ==========
+const TIPOS_SOLICITUD = ["equipo", "afiliacion"];
+
 // ========== DEFINICIÓN DEL ESQUEMA ==========
 
 const SolicitudEquipoSchema = new mongoose.Schema(
@@ -26,6 +29,16 @@ const SolicitudEquipoSchema = new mongoose.Schema(
       ref: "Equipo", // Referencia al modelo Equipo
       required: true, // Campo obligatorio
       index: true, // Índice para búsquedas rápidas
+    },
+
+    // Tipo de solicitud: si el atleta quiere unirse como miembro del equipo
+    // o como afiliado (puede estar afiliado a varios equipos)
+    // "equipo"    → actualiza Person.equipo (campo único, solo un equipo)
+    // "afiliacion" → añade a Person.afiliacion[] (puede haber varios)
+    tipo: {
+      type: String,
+      enum: TIPOS_SOLICITUD, // Solo puede ser 'equipo' o 'afiliacion'
+      required: true, // Campo obligatorio
     },
 
     // Estado actual de la solicitud
@@ -82,9 +95,10 @@ const SolicitudEquipoSchema = new mongoose.Schema(
 // ========== ÍNDICES COMPUESTOS ==========
 // Los índices mejoran el rendimiento en búsquedas frecuentes
 
-// Índice 1: Para evitar solicitudes duplicadas (mismo atleta + mismo equipo + pendiente)
-// También acelera búsquedas como "¿tiene este atleta una solicitud pendiente a este equipo?"
-SolicitudEquipoSchema.index({ atleta: 1, equipo: 1, estado: 1 });
+// Índice 1: Para evitar solicitudes duplicadas (mismo atleta + mismo equipo + mismo tipo + pendiente)
+// Con 'tipo' incluido, un atleta puede tener una solicitud de "equipo" y otra de "afiliacion"
+// al mismo equipo simultáneamente sin conflicto
+SolicitudEquipoSchema.index({ atleta: 1, equipo: 1, tipo: 1, estado: 1 });
 
 // Índice 2: Para buscar rápidamente solicitudes pendientes de un equipo específico
 // Usado por maestros para ver solicitudes de su equipo
@@ -116,16 +130,20 @@ SolicitudEquipoSchema.pre("save", async function (next) {
 
     // Si el estado es 'pendiente', verificar que no exista otra pendiente
     if (this.estado === "pendiente") {
-      // Buscamos si ya existe una solicitud pendiente del mismo atleta al mismo equipo
+      // Buscamos si ya existe una solicitud pendiente del mismo atleta,
+      // mismo equipo y mismo tipo (equipo o afiliacion)
       const solicitudExistente = await this.constructor.findOne({
         atleta: this.atleta,
         equipo: this.equipo,
+        tipo: this.tipo,
         estado: "pendiente",
       });
 
       // Si existe, lanzamos error (no permitimos duplicados)
       if (solicitudExistente) {
-        throw new Error("Ya tienes una solicitud pendiente para este equipo");
+        throw new Error(
+          `Ya tienes una solicitud de ${this.tipo} pendiente para este equipo`,
+        );
       }
     }
 
@@ -217,11 +235,20 @@ SolicitudEquipoSchema.methods.aceptar = async function (mensaje) {
   // Guardamos los cambios en la solicitud
   await this.save();
 
-  // Asignamos el equipo al atleta (actualizamos su campo 'equipo')
-  // Ahora el atleta pertenece oficialmente a este equipo
-  await Person.findByIdAndUpdate(this.atleta, {
-    equipo: this.equipo,
-  });
+  // Actualizamos el atleta según el tipo de solicitud
+  if (this.tipo === "equipo") {
+    // Tipo "equipo": asigna el equipo principal del atleta (campo único)
+    // El atleta solo puede pertenecer a un equipo a la vez
+    await Person.findByIdAndUpdate(this.atleta, {
+      equipo: this.equipo,
+    });
+  } else if (this.tipo === "afiliacion") {
+    // Tipo "afiliacion": añade el equipo al array de afiliaciones del atleta
+    // El atleta puede estar afiliado a varios equipos simultáneamente
+    await Person.findByIdAndUpdate(this.atleta, {
+      $addToSet: { afiliacion: this.equipo }, // $addToSet evita duplicados
+    });
+  }
 
   // Devolvemos la solicitud actualizada
   return this;
@@ -273,5 +300,6 @@ const SolicitudEquipo = mongoose.model(
 // Exportamos el modelo para usarlo en otros archivos (controladores, rutas)
 module.exports = SolicitudEquipo;
 
-// También exportamos el enum ESTADOS para reutilizarlo (ej: en validaciones)
+// También exportamos los enums para reutilizarlos (ej: en validaciones del controlador)
 module.exports.ESTADOS = ESTADOS;
+module.exports.TIPOS_SOLICITUD = TIPOS_SOLICITUD;
