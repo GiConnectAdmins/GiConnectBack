@@ -200,14 +200,14 @@ password: {
  *
  * Seguridad: El password NUNCA se guarda en texto plano en la base de datos
  */
-PersonSchema.pre("save", async function (next) {
+PersonSchema.pre("save", async function () {
   // this = el documento Person que se está guardando
 
   // Verificamos si el campo password fue modificado
   // Si NO fue modificado (por ejemplo, solo se actualizó el nombre),
-  // no hacemos nada y continuamos
+  // no hacemos nada — en Mongoose 9 los hooks async no usan next()
   if (!this.isModified("password")) {
-    return next();
+    return;
   }
 
   // Si llegamos aquí, significa que el password SÍ fue modificado
@@ -220,9 +220,6 @@ PersonSchema.pre("save", async function (next) {
   // Hasheamos el password con bcrypt usando el salt generado
   // El resultado es un hash irreversible que se guarda en la DB
   this.password = await bcrypt.hash(this.password, salt);
-
-  // Continuamos con el guardado
-  next();
 });
 
 // ========== MÉTODOS DE INSTANCIA ==========
