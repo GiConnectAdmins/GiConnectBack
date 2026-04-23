@@ -156,9 +156,10 @@ const create = async (req, res) => {
     }
 
     // Creamos el nuevo BeltDate con los datos recibidos
+    // Usamos fechaFinal (no fecha) para aplicar el valor procesado y validado arriba
     const nuevoBeltDate = new BeltDate({
       cinturon,
-      fecha,
+      fecha: fechaFinal,
     });
 
     // Guardamos en la base de datos
