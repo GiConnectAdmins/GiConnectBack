@@ -47,5 +47,8 @@ app.use("/api/beltdates", require("./routes/beltdate.routes"));
 // Rutas de Cinturones
 app.use('/api/cinturones', require('./routes/cinturon.routes'));
 
+// Rutas de Autenticación (registro y login)
+app.use("/api/auth", require("./routes/auth.routes"));
+
 // Exporta la aplicación para usarla en server.js
 module.exports = app;
