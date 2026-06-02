@@ -25,9 +25,15 @@ const EquipoSchema = new mongoose.Schema(
     
     // Teléfono de contacto del equipo
     // Obligatorio para poder contactar con el equipo
-    telefono: { 
-      type: String, 
-      required: true   // Cambiado de default: "" a required: true
+    telefono: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function(tel) {
+          return /^\d{9}$/.test(tel);
+        },
+        message: "El teléfono debe tener exactamente 9 dígitos"
+      }
     },
     
     // URL de la foto del logo del equipo
