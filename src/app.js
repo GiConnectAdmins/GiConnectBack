@@ -53,6 +53,9 @@ app.use("/api/equipos", require("./routes/equipo.routes"));
 // Rutas de Personas
 app.use("/api/personas", require("./routes/person.routes"));
 
+// Rutas de Solicitudes de Equipo (un atleta solicita unirse o afiliarse a un equipo)
+app.use("/api/solicitudes-equipo", require("./routes/solicitudEquipo.routes"));
+
 // Rutas de Autenticación (registro y login)
 app.use("/api/auth", require("./routes/auth.routes"));
 
