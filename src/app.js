@@ -50,6 +50,9 @@ app.use('/api/cinturones', require('./routes/cinturon.routes'));
 // Rutas de Equipos
 app.use("/api/equipos", require("./routes/equipo.routes"));
 
+// Rutas de Personas
+app.use("/api/personas", require("./routes/person.routes"));
+
 // Rutas de Autenticación (registro y login)
 app.use("/api/auth", require("./routes/auth.routes"));
 
