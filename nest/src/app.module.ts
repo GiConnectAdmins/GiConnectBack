@@ -8,6 +8,7 @@ import { envValidationSchema } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { PersonModule } from './modules/person/person.module';
 import { EquipoModule } from './modules/equipo/equipo.module';
+import { ClaseModule } from './modules/clase/clase.module';
 
 @Module({
   imports: [
@@ -30,9 +31,10 @@ import { EquipoModule } from './modules/equipo/equipo.module';
     PersonModule,
     AuthModule,
     EquipoModule,
+    ClaseModule,
 
     // A partir de aquí se irán añadiendo los módulos de dominio en los siguientes hitos:
-    // ClaseModule, CinturonModule, BeltDateModule, SolicitudEquipoModule
+    // CinturonModule, BeltDateModule, SolicitudEquipoModule
   ],
   controllers: [AppController],
   providers: [AppService],
