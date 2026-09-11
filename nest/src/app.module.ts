@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PersonModule } from './modules/person/person.module';
 import { EquipoModule } from './modules/equipo/equipo.module';
 import { ClaseModule } from './modules/clase/clase.module';
+import { CinturonModule } from './modules/cinturon/cinturon.module';
+import { BeltDateModule } from './modules/belt-date/belt-date.module';
 
 @Module({
   imports: [
@@ -32,9 +34,11 @@ import { ClaseModule } from './modules/clase/clase.module';
     AuthModule,
     EquipoModule,
     ClaseModule,
+    CinturonModule,
+    BeltDateModule,
 
     // A partir de aquí se irán añadiendo los módulos de dominio en los siguientes hitos:
-    // CinturonModule, BeltDateModule, SolicitudEquipoModule
+    // SolicitudEquipoModule
   ],
   controllers: [AppController],
   providers: [AppService],
