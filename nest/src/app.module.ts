@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
+import { AppThrottlerGuard } from './common/guards/throttler.guard';
 import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { envValidationSchema } from './config/env.validation';
@@ -31,6 +34,17 @@ import { SolicitudEquipoModule } from './modules/solicitud-equipo/solicitud-equi
       }),
     }),
 
+    // Rate limiting global (T21: anti fuerza bruta). Límite generoso por defecto para
+    // no molestar el uso normal de la API; el login usa un límite mucho más estricto
+    // con @Throttle() directamente en AuthController (ver auth.controller.ts).
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60_000, // 60 segundos
+        limit: 100, // 100 peticiones por IP cada 60s en el resto de endpoints
+      },
+    ]),
+
     PersonModule,
     AuthModule,
     EquipoModule,
@@ -38,10 +52,15 @@ import { SolicitudEquipoModule } from './modules/solicitud-equipo/solicitud-equi
     CinturonModule,
     BeltDateModule,
     SolicitudEquipoModule,
-    // Todos los módulos de dominio ya están migrados. Quedan los hitos 8-10:
-    // endurecimiento de seguridad transversal, punto de corte y limpieza final.
+    // Todos los módulos de dominio ya están migrados. Quedan los hitos 9-10:
+    // punto de corte y limpieza final.
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Aplica el rate limiting a TODAS las rutas automáticamente, sin tener que
+    // añadir el guard manualmente en cada controlador
+    { provide: APP_GUARD, useClass: AppThrottlerGuard },
+  ],
 })
 export class AppModule {}

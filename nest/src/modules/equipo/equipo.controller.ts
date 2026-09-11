@@ -12,15 +12,16 @@ import { UpdateEquipoDto } from './dto/update-equipo.dto';
 export class EquipoController {
   constructor(private readonly equipoService: EquipoService) {}
 
-  // GET /api/equipos — sin auth todavía, igual que en Express hoy.
-  // Se cierra en el hito 8 (endurecimiento transversal de seguridad, ticket T21).
+  // GET /api/equipos — cualquier usuario autenticado (T21: antes estaba abierta)
   @Get()
+  @UseGuards(JwtAuthGuard)
   getAll() {
     return this.equipoService.getAll();
   }
 
-  // GET /api/equipos/:id — sin auth todavía (hito 8)
+  // GET /api/equipos/:id — cualquier usuario autenticado
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   getById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.equipoService.getById(id);
   }

@@ -11,13 +11,15 @@ import { UpdateCinturonDto } from './dto/update-cinturon.dto';
 export class CinturonController {
   constructor(private readonly cinturonService: CinturonService) {}
 
-  // GET — sin auth todavía, igual que en Express hoy (se cierra en el hito 8)
+  // GET — cualquier usuario autenticado (T21: antes estaba abierta)
   @Get()
+  @UseGuards(JwtAuthGuard)
   getAll() {
     return this.cinturonService.getAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   getById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.cinturonService.getById(id);
   }

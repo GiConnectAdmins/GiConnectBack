@@ -11,13 +11,15 @@ import { UpdateBeltDateDto } from './dto/update-belt-date.dto';
 export class BeltDateController {
   constructor(private readonly beltDateService: BeltDateService) {}
 
-  // GET — sin auth todavía, igual que en Express hoy (se cierra en el hito 8)
+  // GET — cualquier usuario autenticado (T21: antes estaba abierta)
   @Get()
+  @UseGuards(JwtAuthGuard)
   getAll() {
     return this.beltDateService.getAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   getById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.beltDateService.getById(id);
   }
