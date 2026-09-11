@@ -11,6 +11,7 @@ import { EquipoModule } from './modules/equipo/equipo.module';
 import { ClaseModule } from './modules/clase/clase.module';
 import { CinturonModule } from './modules/cinturon/cinturon.module';
 import { BeltDateModule } from './modules/belt-date/belt-date.module';
+import { SolicitudEquipoModule } from './modules/solicitud-equipo/solicitud-equipo.module';
 
 @Module({
   imports: [
@@ -36,9 +37,9 @@ import { BeltDateModule } from './modules/belt-date/belt-date.module';
     ClaseModule,
     CinturonModule,
     BeltDateModule,
-
-    // A partir de aquí se irán añadiendo los módulos de dominio en los siguientes hitos:
-    // SolicitudEquipoModule
+    SolicitudEquipoModule,
+    // Todos los módulos de dominio ya están migrados. Quedan los hitos 8-10:
+    // endurecimiento de seguridad transversal, punto de corte y limpieza final.
   ],
   controllers: [AppController],
   providers: [AppService],
