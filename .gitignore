@@ -10,6 +10,7 @@ pnpm-debug.log*
 # Build
 dist/
 build/
+coverage/
 
 # Environment variables
 .env
