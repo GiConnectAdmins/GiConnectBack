@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Person, PersonDocument } from './schemas/person.schema';
 import { Equipo, EquipoDocument } from '../equipo/schemas/equipo.schema';
 import { UpdateMeDto } from './dto/update-me.dto';
@@ -272,6 +272,22 @@ export class PersonService {
     }
 
     return { mensaje: 'Persona eliminada correctamente' };
+  }
+
+  // ========================================================================
+  // PUT /api/equipos/:id/reset-clases-impartidas (vive en EquipoController, hito 4)
+  // Nota histórica: en el Express actual este endpoint monta bajo /api/equipos pero
+  // la lógica vivía en person.controller.js. Aquí se mantiene igual: EquipoService
+  // llama a este método inyectando PersonService, en vez de tocar el modelo Person
+  // directamente desde otro módulo.
+  // ========================================================================
+
+  async resetClasesImpartidas(personIds: (Types.ObjectId | string)[]): Promise<number> {
+    const resultado = await this.personModel.updateMany(
+      { _id: { $in: personIds } },
+      { clasesImpartidas: 0 },
+    );
+    return resultado.modifiedCount;
   }
 
   /** Quita las claves con valor undefined (para no sobreescribir campos sin querer) */
