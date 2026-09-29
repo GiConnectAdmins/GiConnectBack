@@ -1,6 +1,10 @@
 # GiConnect — Backend
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=GiConnectAdmins_GiConnectBack&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=GiConnectAdmins_GiConnectBack)
+
 API REST para GiConnect, una aplicación de gestión de gimnasios y academias de artes marciales: control de alumnos, cinturones, clases, solicitudes de ingreso a equipo y autenticación por roles.
+
+- **Frontend** (Angular 20 + Ionic 8 + Capacitor, en desarrollo): [GiConnectFront](https://github.com/GiConnectAdmins/GiConnectFront)
 
 ## Stack tecnológico
 
@@ -11,8 +15,9 @@ API REST para GiConnect, una aplicación de gestión de gimnasios y academias de
 - **Helmet** — cabeceras de seguridad HTTP
 - **@nestjs/throttler** — rate limiting (anti fuerza bruta en login)
 - **Joi** (vía `@nestjs/config`) — validación de variables de entorno al arrancar
+- **Jest** — tests unitarios; **SonarCloud** + **GitHub Actions** — análisis de calidad en cada push y PR
 
-> El backend original se construyó con Express y se migró por completo a NestJS (ver [PROGRESS.md](./PROGRESS.md) para el detalle de esa migración). El comportamiento de la API es equivalente al backend Express original: mismas rutas, mismos códigos de estado, mismos mensajes de error.
+> El backend original se construyó con Express y se migró por completo a NestJS (ver [MIGRACION.md](./MIGRACION.md) para el detalle de esa migración). El comportamiento de la API es equivalente al backend Express original: mismas rutas, mismos códigos de estado, mismos mensajes de error.
 
 ## Estructura del proyecto
 
@@ -50,7 +55,7 @@ src/
     solicitud-equipo/    # solicitudes de un atleta para unirse/afiliarse a un equipo
 
 test/
-  app.e2e-spec.ts        # test e2e de la ruta raíz (base para ampliar en el futuro)
+  app.e2e-spec.ts        # test e2e de la ruta raíz (base para los e2e con Supertest)
 ```
 
 Cada módulo de dominio sigue la misma forma: `*.module.ts` (wiring), `*.controller.ts` (rutas HTTP, fino), `*.service.ts` (lógica de negocio), `schemas/*.schema.ts` (modelo Mongoose con `@Schema()`/`@Prop()`), `dto/*.dto.ts` (validación de entrada).
@@ -94,6 +99,7 @@ Definidas en `.env` (nunca se commitea; usa `.env.example` como plantilla) y val
 | `npm run lint` | Linter con autofix |
 | `npm run format` | Formatea el código con Prettier (comillas dobles) |
 | `npm test` | Tests unitarios (Jest) |
+| `npm run test:cov` | Tests con informe de cobertura |
 | `npm run test:e2e` | Tests end-to-end |
 
 ## Autenticación y roles
@@ -120,6 +126,29 @@ Todas las respuestas de error siguen el mismo contrato: `{ "mensaje": "..." }` (
 
 Los DTOs usan `class-validator` con un `ValidationPipe` global en modo `whitelist` (descarta cualquier campo no declarado en el DTO) — esto es, entre otras cosas, lo que impide el *mass assignment* en las rutas de actualización.
 
+## Tests y calidad
+
+- **88 tests unitarios** en 11 suites (Jest), todos en verde: servicios de los 7 módulos, guards de permisos y pipes. Los modelos de Mongoose y las dependencias se mockean, así que no necesitan base de datos.
+- Cubren las reglas de negocio más delicadas: visibilidad de perfiles según el rol, qué campos puede tocar cada rol, validación de solicitudes a equipos y el login sin revelar si falló el email o la contraseña.
+- **Integración continua**: en cada push y pull request a `develop` y `main`, GitHub Actions ejecuta los tests con cobertura y el análisis de SonarCloud.
+- Detalle de qué cubre cada suite y qué falta en [TESTING.md](./TESTING.md).
+
+## Flujo de trabajo
+
+- **Git flow**: `main` (versiones estables) ← `develop` (integración) ← una rama `ticket-X` por tarea.
+- Cada ticket se integra mediante un pull request a `develop`, revisado por el otro miembro del equipo.
+- Las tareas se planifican en un tablero de Trello, con requisitos y criterios de aceptación en cada ticket.
+- Estilo de código: Prettier (comillas dobles), ESLint, código comentado en español y principios SOLID (controllers finos, lógica en servicios, permisos en guards).
+
 ## Estado del proyecto
 
-Ver [PROGRESS.md](./PROGRESS.md) para el histórico de la migración a NestJS y qué queda pendiente del roadmap general (tickets en Trello).
+**Hecho**
+- API REST completa de los 7 módulos, con autenticación JWT y permisos por rol y por equipo.
+- Migración completa de Express a NestJS sin cambios en la API (ver [MIGRACION.md](./MIGRACION.md)).
+- Tests unitarios y análisis continuo con SonarCloud.
+
+**En desarrollo**
+- Carga inicial del catálogo de cinturones y datos de demostración.
+- Frontend con una demo pública: login, perfil del atleta con su historial de cinturones, solicitudes para unirse a un equipo y portal del maestro.
+- Sistema de cuotas (mensualidades y bonos de clases), reserva de clases con aforo y horarios propios de cada gimnasio.
+- Búsqueda pública de gimnasios por ciudad, con perfiles públicos o privados (RGPD).
