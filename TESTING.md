@@ -1,7 +1,6 @@
 # Registro de tests unitarios (Jest)
 
-> Registro de qué está cubierto con tests y qué falta, para retomar sin perder contexto
-> (mismo criterio que [PROGRESS.md](PROGRESS.md)). Se actualiza cada vez que se añaden
+> Registro de qué está cubierto con tests y qué falta. Se actualiza cada vez que se añaden
 > o se dejan de añadir tests a un módulo.
 
 ## Contexto
@@ -61,7 +60,7 @@ Esto no afecta al build de producción (`nest build` sigue usando `tsconfig.json
   wiring de Passport/`@nestjs/throttler` — bajo valor unitario, se confía en el
   framework como pide la convención del proyecto.
 - **`main.ts`, `configuration.ts`, `env.validation.ts`**: arranque/config, se prueban
-  mejor arrancando la app (ya se hizo manualmente en cada hito, ver PROGRESS.md) que
+  mejor arrancando la app (ya se hizo manualmente en cada hito, ver [MIGRACION.md](MIGRACION.md)) que
   con un unitario.
 - **Frontend (`GiConnectFront`)**: revisado — de momento solo existe el esqueleto que
   genera el CLI de Ionic/Angular (`AppComponent`, `HomePage`, sin servicios ni lógica
